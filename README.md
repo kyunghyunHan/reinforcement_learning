@@ -17,3 +17,5 @@
 - 플레이어는 에이전트
 ## Algorithms 
 - [Q-learning]()
+
+# Stock
