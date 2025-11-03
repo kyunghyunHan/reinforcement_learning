@@ -37,10 +37,43 @@ impl Bandit {
         }
     }
 }
-struct Agant {
-
+struct Agent {
+    epsilon: f64,
+    qs: Array1<f64>,
+    ns: Array1<f64>,
 }
 
+impl Agent {
+    fn new(epsilon: f64, action_size: usize) -> Self {
+        Self {
+            epsilon,
+            qs: Array1::zeros(action_size),
+            ns: Array1::zeros(action_size),
+        }
+    }
+
+    fn update(&mut self, action: usize, reward: f64) {
+        self.ns[action] += 1.0;
+        self.qs[action] += (reward - self.qs[action]) / self.ns[action];
+    }
+    fn get_action(&self) -> usize {
+        let mut rng = rand::thread_rng();
+        let random_value: f64 = rng.gen_range(0.0..1.0);
+
+        if random_value < self.epsilon {
+            // 무작위 행동
+            rng.gen_range(0..self.qs.len())
+        } else {
+            // argmax 대신 f64 비교 안전하게 max_by 사용
+            self.qs
+                .iter()
+                .enumerate()
+                .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+                .unwrap()
+                .0
+        }
+    }
+}
 
 pub fn example() {
     // let runs = 200;
@@ -70,7 +103,7 @@ pub fn example() {
     // println!("총 보상 평균: {:?}", all_rates.mean());
     // test();
 
-    test3();
+    test4();
 }
 
 fn test() {
@@ -112,4 +145,46 @@ fn test3() {
         let reward = bandit.play(0);
         println!("{}", reward);
     }
+}
+
+fn test4() {
+    // let runs = 200;
+    let steps = 1000;
+    let epsilon = 0.1;
+    let mut bandit = Bandit::new(20);
+    let mut agent = Agent::new(epsilon, 10);
+
+    let mut total_reward = 0;
+    let mut total_reawrds = vec![];
+    let mut reates = vec![];
+    for step in 0..steps {
+        let action = agent.get_action();
+        let reward = bandit.play(action);
+        agent.update(action, reward as f64);
+        total_reward += reward;
+
+        total_reawrds.push(total_reward);
+        reates.push(total_reward / (step + 1))
+    }
+    // for run in 0..runs {
+    //     let mut total_reward = 0;
+    //     let bandit = Bandit::new();
+    //     let mut agent = Agent::new(epsilon);
+    //     let mut rates = vec![];
+
+    //     for step in 0..steps {
+    //         let action = agent.get_action();
+    //         let reward = bandit.play(action);
+    //         agent.update(action, reward);
+    //         total_reward += reward;
+    //         rates.push(total_reward as f32 / (step + 1) as f32); // ✅ 실수 연산
+    //     }
+
+    //     all_rates
+    //         .slice_mut(s![run, ..])
+    //         .assign(&Array1::from_vec(rates));
+    // }
+
+    // println!("총 보상 평균: {:?}", all_rates.mean());
+    println!("{}", total_reward);
 }
