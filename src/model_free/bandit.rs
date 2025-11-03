@@ -107,22 +107,39 @@ pub fn example() {
     // }
 
     // println!("총 보상 평균: {:?}", all_rates.mean());
-    test();
+    // test();
+    test2();
 }
 
 fn test() {
-        // 시드 고정 (파이썬 np.random.seed(0)과 동일)
-        let mut rng = StdRng::seed_from_u64(0);
+    // 시드 고정 (파이썬 np.random.seed(0)과 동일)
+    let mut rng = StdRng::seed_from_u64(0);
 
-        let mut rewards = Vec::new();
+    let mut rewards = Vec::new();
 
-        for _ in 1..=10 {
-            // np.random.rand() ~ [0.0, 1.0) 난수
-            let reward: f64 = rng.gen_range(0.0..1.0);
-            rewards.push(reward);
-            println!("reward = {}", reward);
-        }
+    for _ in 1..=10 {
+        // np.random.rand() ~ [0.0, 1.0) 난수
+        let reward: f64 = rng.gen_range(0.0..1.0);
+        rewards.push(reward);
+        println!("reward = {}", reward);
+    }
 
-        println!("rewards = {:?}", rewards);
-    
+    println!("rewards = {:?}", rewards);
+}
+
+fn test2() {
+    // numpy random seed(0) 과 같은 효과
+    let mut rng = StdRng::seed_from_u64(0);
+
+    let mut q: f64 = 0.0;
+
+    for n in 1..=10 {
+        // np.random.rand()
+        let reward: f64 = rng.gen_range(0.0..1.0);
+
+        // Q = Q + (reward - Q) / n
+        q = q + (reward - q) / n as f64;
+
+        println!("step {n}: Q = {q}");
+    }
 }
