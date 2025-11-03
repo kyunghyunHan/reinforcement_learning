@@ -37,6 +37,10 @@ impl Bandit {
         }
     }
 }
+struct Agant {
+
+}
+
 
 pub fn example() {
     // let runs = 200;
