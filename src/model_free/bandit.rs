@@ -1,6 +1,15 @@
+/*
+Bandit
+
+Multi_armed bandit problem
+- 슬롯머신이 여러대인 문제
+- 슬롯머신 - 환경 
+- 플레이어 - 에이전트
+- 좋은 슬롯 머신이란
+*/
+
 use ndarray::s;
 use ndarray::{Array1, Array2};
-use ndarray_stats::QuantileExt;
 use rand::Rng;
 
 pub struct Bandit {
@@ -58,7 +67,17 @@ impl Agent {
         if random_value < self.epsilon {
             rng.gen_range(0..self.qs.len())
         } else {
-            self.qs.argmax().unwrap()
+            let mut best_index = 0;
+            let mut best_value = f32::NEG_INFINITY;
+
+            for (idx, &value) in self.qs.iter().enumerate() {
+                if value > best_value {
+                    best_index = idx;
+                    best_value = value;
+                }
+            }
+
+            best_index
         }
     }
 }
